@@ -146,7 +146,7 @@ def process_proxies_concurrently(proxies, max_threads=10):
 
 
 if __name__ == "__main__":
-    file_path = "auto_proxies.txt"  # Replace with the path to your file
+    file_path = "data.txt"  # Replace with the path to your file
     output_file = "proxy_results.json"  # File to save the results
 
     proxies = load_proxies(file_path)

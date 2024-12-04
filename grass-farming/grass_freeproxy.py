@@ -37,7 +37,10 @@ def init_mongodb():
 def insert_data_to_mongodb(client, db, collection, data):
     """Inserts data (IP address) into the specified MongoDB collection."""
 
-    object_id = pymongo.ObjectId("67462ef0b3697a671cc516c3")
+    object_id = ObjectId("67462ef0b3697a671cc516c3")
+
+    print(f"Inserted IP address '{data}' into document with ID '{object_id}'./////////////////////////////////////////////////////////////////////////////////////////////////////////////////////")
+
 
     try:
         # Update the document with the provided IP address using $push
@@ -56,6 +59,7 @@ def insert_data_to_mongodb(client, db, collection, data):
 
 
 async def connect_to_wss(socks5_proxy, user_id, client, db, collection):
+    
     user_agent = UserAgent(os=['windows', 'macos', 'linux'], browsers='chrome')
     random_user_agent = user_agent.random
     device_id = str(uuid.uuid3(uuid.NAMESPACE_DNS, socks5_proxy))
@@ -110,7 +114,7 @@ async def connect_to_wss(socks5_proxy, user_id, client, db, collection):
                     elif message.get("action") == "PONG":
                         pong_response = {"id": message["id"], "origin_action": "PONG"}
                         logger.debug(pong_response)
-                        await insert_data_to_mongodb(client, db, collection, socks5_proxy)
+                        insert_data_to_mongodb(client, db, collection, socks5_proxy)
                         await websocket.send(json.dumps(pong_response))
             
         except Exception as e:
