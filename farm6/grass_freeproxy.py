@@ -13,52 +13,53 @@ from fake_useragent import UserAgent
 import pymongo
 from bson.objectid import ObjectId
 
-def init_mongodb():
-    """Connects to the MongoDB database and initializes the client, database, and collection."""
+# def init_mongodb():
+#     """Connects to the MongoDB database and initializes the client, database, and collection."""
 
-    # Replace with your actual connection string (avoid storing credentials in plain text)
-    connection_string = "mongodb+srv://user:BLX2zHk68eNv8Adq@cluster0.p31vf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+#     # Replace with your actual connection string (avoid storing credentials in plain text)
+#     connection_string = "mongodb+srv://user:BLX2zHk68eNv8Adq@cluster0.p31vf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
-    try:
-        client = pymongo.MongoClient(connection_string)
-        db = client["Proxy"]
-        collection = db["Fresh-proxy"]
+#     try:
+#         client = pymongo.MongoClient(connection_string)
+#         db = client["Proxy"]
+#         collection = db["Fresh-proxy"]
 
-        # Test connection
-        client.server_info()
-        print("Connected to MongoDB successfully!")
+#         # Test connection
+#         client.server_info()
+#         print("Connected to MongoDB successfully!")
 
-    except pymongo.errors.ConnectionFailure as e:
-        print(f"Failed to connect to MongoDB: {e}")
-        return  # Exit the function gracefully if connection fails
+#     except pymongo.errors.ConnectionFailure as e:
+#         print(f"Failed to connect to MongoDB: {e}")
+#         return  # Exit the function gracefully if connection fails
 
-    return client, db, collection  # Return useful objects for further interaction
+#     return client, db, collection  # Return useful objects for further interaction
 
-def insert_data_to_mongodb(client, db, collection, data):
-    """Inserts data (IP address) into the specified MongoDB collection."""
+# def insert_data_to_mongodb(client, db, collection, data):
+#     """Inserts data (IP address) into the specified MongoDB collection."""
 
-    object_id = ObjectId("67462ef0b3697a671cc516c3")
+#     object_id = ObjectId("67462ef0b3697a671cc516c3")
 
-    print(f"Inserted IP address '{data}' into document with ID '{object_id}'./////////////////////////////////////////////////////////////////////////////////////////////////////////////////////")
-
-
-    try:
-        # Update the document with the provided IP address using $push
-        result = collection.update_one({"_id": object_id}, {"$push": {"myip": data}})
-
-        # Print informative message based on the update result
-        if result.matched_count == 0:
-            print(f"Document with ID '{object_id}' not found. Creating a new document and inserting data.")
-            collection.insert_one({"_id": object_id, "myip": [data]})  # Create a new document with the IP
-        else:
-            print(f"Inserted IP address '{data}' into document with ID '{object_id}'.")
-
-    except pymongo.errors.PyMongoError as e:
-        print(f"Error inserting data: {e}")
+#     print(f"Inserted IP address '{data}' into document with ID '{object_id}'./////////////////////////////////////////////////////////////////////////////////////////////////////////////////////")
 
 
+#     try:
+#         # Update the document with the provided IP address using $push
+#         result = collection.update_one({"_id": object_id}, {"$push": {"myip": data}})
 
-async def connect_to_wss(socks5_proxy, user_id, client, db, collection):
+#         # Print informative message based on the update result
+#         if result.matched_count == 0:
+#             print(f"Document with ID '{object_id}' not found. Creating a new document and inserting data.")
+#             collection.insert_one({"_id": object_id, "myip": [data]})  # Create a new document with the IP
+#         else:
+#             print(f"Inserted IP address '{data}' into document with ID '{object_id}'.")
+
+#     except pymongo.errors.PyMongoError as e:
+#         print(f"Error inserting data: {e}")
+
+
+# async def connect_to_wss(socks5_proxy, user_id, client, db, collection):
+
+async def connect_to_wss(socks5_proxy, user_id):
     
     user_agent = UserAgent(os=['windows', 'macos', 'linux'], browsers='chrome')
     random_user_agent = user_agent.random
@@ -114,7 +115,7 @@ async def connect_to_wss(socks5_proxy, user_id, client, db, collection):
                     elif message.get("action") == "PONG":
                         pong_response = {"id": message["id"], "origin_action": "PONG"}
                         logger.debug(pong_response)
-                        insert_data_to_mongodb(client, db, collection, socks5_proxy)
+                        # insert_data_to_mongodb(client, db, collection, socks5_proxy)
                         await websocket.send(json.dumps(pong_response))
             
         except Exception as e:
@@ -129,7 +130,7 @@ async def connect_to_wss(socks5_proxy, user_id, client, db, collection):
 def fetch_proxies():
     """Fetches proxies from the API and saves them to 'auto_proxies.txt'."""
     # api_url = "https://api.proxyscrape.com/v4/free-proxy-list/get?request=display_proxies&proxy_format=protocolipport&format=text"
-    api_url = "https://raw.githubusercontent.com/shabeersha/Grassbackup/refs/heads/main/data3.txt"
+    api_url = "https://raw.githubusercontent.com/shabeersha/Grassbackup/refs/heads/main/data6.txt"
     try:
         response = requests.get(api_url, stream=True)
         if response.status_code == 200:
@@ -150,7 +151,7 @@ def fetch_proxies():
     return True
 
 async def main():
-    client, db, collection = init_mongodb()
+    # client, db, collection = init_mongodb()
     try:
         with open('user_id.txt', 'r') as f:
             _user_id = f.read().strip()
@@ -178,7 +179,8 @@ async def main():
         print("Error: 'auto_proxies.txt' file not found.")
         return
 
-    tasks = [asyncio.ensure_future(connect_to_wss(i, _user_id,client, db, collection)) for i in auto_proxy_list]
+    # tasks = [asyncio.ensure_future(connect_to_wss(i, _user_id,client, db, collection)) for i in auto_proxy_list]
+    tasks = [asyncio.ensure_future(connect_to_wss(i, _user_id)) for i in auto_proxy_list]
     await asyncio.gather(*tasks)
 
 if __name__ == '__main__':
