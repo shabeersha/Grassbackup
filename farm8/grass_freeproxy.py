@@ -130,7 +130,7 @@ async def connect_to_wss(socks5_proxy, user_id):
 def fetch_proxies():
     """Fetches proxies from the API and saves them to 'auto_proxies.txt'."""
     # api_url = "https://api.proxyscrape.com/v4/free-proxy-list/get?request=display_proxies&proxy_format=protocolipport&format=text"
-    api_url = "https://raw.githubusercontent.com/shabeersha/Grassbackup/refs/heads/main/data8.txt"
+    api_url = "https://raw.githubusercontent.com/shabeersha/Grassbackup/refs/heads/main/proxyScrapper/proxies_part_8.txt"
     try:
         response = requests.get(api_url, stream=True)
         if response.status_code == 200:
